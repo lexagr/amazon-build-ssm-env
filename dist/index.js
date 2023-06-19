@@ -69,16 +69,22 @@ function buildEnv(selectedEnv, envTemplate, parameters) {
     return env;
 }
 (async () => {
-    const environment = core.getInput(input_enum_1.Input.ENVIRONMENT);
+    const environment = core.getInput(input_enum_1.Input.ENVIRONMENT, { required: true });
+    const baseDir = core.getInput(input_enum_1.Input.BASE_DIR);
+    let baseDirPath = process.cwd();
+    if (baseDir) {
+        baseDirPath = `${process.cwd()}/${baseDir}`;
+    }
+    core.info(`Base directory: ${baseDirPath}`);
     core.info(`Building .env for "${environment}" environment...`);
     try {
         core.info(`Reading .env.template...`);
-        const envTemplateBuffer = await readFile(`${process.cwd()}/.env.template`);
+        const envTemplateBuffer = await readFile(`${baseDirPath}/.env.template`);
         core.info(`Fetching parameters from SSM Parameter Store...`);
         const parameters = await getParametersByEnvironment(environment);
         core.info(`Building .env...`);
         const envContent = buildEnv(environment, envTemplateBuffer.toString(), parameters);
-        await writeFile(`${process.cwd()}/.env`, envContent);
+        await writeFile(`${baseDirPath}/.env`, envContent);
         core.info(`.env for "${environment}" environment has been built successfully!`);
     }
     catch (e) {
@@ -99,6 +105,7 @@ exports.Input = void 0;
 var Input;
 (function (Input) {
     Input["ENVIRONMENT"] = "environment";
+    Input["BASE_DIR"] = "base_dir";
 })(Input = exports.Input || (exports.Input = {}));
 
 

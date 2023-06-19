@@ -68,6 +68,7 @@ function buildEnv(
         baseDirPath = `${process.cwd()}/${baseDir}`;
     }
 
+    core.info(`Base directory: ${baseDirPath}`);
     core.info(`Building .env for "${environment}" environment...`);
 
     try {
