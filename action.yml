@@ -7,6 +7,9 @@ inputs:
   environment:
     description: 'Environment name'
     required: true
+  base_dir:
+    description: 'Base directory'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'

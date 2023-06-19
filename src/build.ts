@@ -58,14 +58,22 @@ function buildEnv(
 
 (async () => {
     // const environment = `dev`;
-    const environment = core.getInput(Input.ENVIRONMENT);
+    // const baseDir = `test`;
+
+    const environment = core.getInput(Input.ENVIRONMENT, { required: true });
+    const baseDir = core.getInput(Input.BASE_DIR);
+
+    let baseDirPath = process.cwd();
+    if (baseDir) {
+        baseDirPath = `${process.cwd()}/${baseDir}`;
+    }
 
     core.info(`Building .env for "${environment}" environment...`);
 
     try {
         core.info(`Reading .env.template...`);
         const envTemplateBuffer = await readFile(
-            `${process.cwd()}/.env.template`,
+            `${baseDirPath}/.env.template`,
         );
 
         core.info(`Fetching parameters from SSM Parameter Store...`);
@@ -78,7 +86,7 @@ function buildEnv(
             parameters,
         );
 
-        await writeFile(`${process.cwd()}/.env`, envContent);
+        await writeFile(`${baseDirPath}/.env`, envContent);
 
         core.info(
             `.env for "${environment}" environment has been built successfully!`,
